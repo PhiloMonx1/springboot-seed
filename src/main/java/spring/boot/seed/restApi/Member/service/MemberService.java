@@ -14,6 +14,7 @@ import spring.boot.seed.restApi.Member.repository.MemberRepository;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final BCryptPasswordEncoder encoder;
 
 	public String join(MemberJoinRequestDto dto){
 		memberRepository.findByMemberName(dto.getMemberName())
@@ -21,7 +22,7 @@ public class MemberService {
 
 		memberRepository.save(MemberEntity.builder()
 				.memberName(dto.getMemberName())
-				.password(dto.getPassword())
+				.password(encoder.encode(dto.getPassword()))
 				.build());
 
 		return  "SUCCESS";
@@ -31,7 +32,7 @@ public class MemberService {
 		MemberEntity selectedMember = memberRepository.findByMemberName(dto.getMemberName())
 				.orElseThrow(() ->new RuntimeException("해당 유저를 찾을 수 없습니다."));
 
-		if(!dto.getPassword().equals(selectedMember.getPassword())){
+		if(!encoder.matches(dto.getPassword(), selectedMember.getPassword())){
 			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
 		}
 
