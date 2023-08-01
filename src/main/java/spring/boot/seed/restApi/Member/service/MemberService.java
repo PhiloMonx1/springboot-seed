@@ -8,6 +8,7 @@ import spring.boot.seed.restApi.Member.dto.MemberJoinRequestDto;
 import spring.boot.seed.restApi.Member.dto.MemberLoginRequestDto;
 import spring.boot.seed.restApi.Member.model.MemberEntity;
 import spring.boot.seed.restApi.Member.repository.MemberRepository;
+import spring.boot.seed.utils.JwtUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,10 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final BCryptPasswordEncoder encoder;
+
+	@Value("${jwt.secret}")
+	private String secretKey;
+	private Long expireTimeMs = 1000 * 60 * 60 * 24L;
 
 	public String join(MemberJoinRequestDto dto){
 		memberRepository.findByMemberName(dto.getMemberName())
@@ -36,6 +41,6 @@ public class MemberService {
 			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
 		}
 
-		return "Token";
+		return JwtUtil.createToken(selectedMember.getMemberName(), secretKey, expireTimeMs);
 	}
 }
