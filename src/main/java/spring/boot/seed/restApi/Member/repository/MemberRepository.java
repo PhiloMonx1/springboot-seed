@@ -6,4 +6,5 @@ import spring.boot.seed.restApi.Member.model.MemberEntity;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
+	Optional<MemberEntity> findByMemberName(String memberName);
 }
