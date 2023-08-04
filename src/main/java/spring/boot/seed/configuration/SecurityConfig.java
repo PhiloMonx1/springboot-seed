@@ -1,7 +1,6 @@
 package spring.boot.seed.configuration;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +13,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-import spring.boot.seed.restApi.Member.service.MemberService;
 
 import java.util.List;
 
@@ -23,9 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 	private String frontendUrl = "http://localhost:3000";
-	private final MemberService memberService;
-
-
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		return httpSecurity
@@ -57,7 +52,7 @@ public class SecurityConfig {
 						.anyRequest().authenticated())
 				.sessionManagement(sessionManagement -> sessionManagement
 						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.addFilterBefore(new JwtFilter(memberService), UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)
 				.build();
 	}
 }

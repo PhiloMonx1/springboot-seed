@@ -11,7 +11,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
-import spring.boot.seed.restApi.Member.service.MemberService;
 import spring.boot.seed.utils.JwtUtil;
 
 import java.io.IOException;
@@ -19,8 +18,6 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-
-	private final MemberService memberService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
