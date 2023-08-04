@@ -24,8 +24,7 @@ import java.util.List;
 public class SecurityConfig {
 	private String frontendUrl = "http://localhost:3000";
 	private final MemberService memberService;
-	@Value("${jwt.secret}")
-	private String secretKey;
+
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -58,7 +57,7 @@ public class SecurityConfig {
 						.anyRequest().authenticated())
 				.sessionManagement(sessionManagement -> sessionManagement
 						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.addFilterBefore(new JwtFilter(memberService, secretKey), UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(new JwtFilter(memberService), UsernamePasswordAuthenticationFilter.class)
 				.build();
 	}
 }

@@ -19,10 +19,6 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final BCryptPasswordEncoder encoder;
 
-	@Value("${jwt.secret}")
-	private String secretKey;
-	private Long expireTimeMs = 1000 * 60 * 60 * 24L;
-
 	public String join(MemberJoinRequestDto dto){
 		memberRepository.findByMemberName(dto.getMemberName())
 				.ifPresent(memberEntity -> {throw new AppException(ErrorCode.MEMBER_NAME_DUPLICATED, "이미 사용중인 MemberName 입니다.");});
@@ -43,6 +39,6 @@ public class MemberService {
 			throw new AppException(ErrorCode.INVALID_PASSWORD, "비밀번호가 일치하지 않습니다.");
 		}
 
-		return JwtUtil.createToken(selectedMember.getMemberName(), secretKey, expireTimeMs);
+		return JwtUtil.createToken(selectedMember.getMemberName());
 	}
 }
