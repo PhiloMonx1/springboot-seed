@@ -1,11 +1,11 @@
-package spring.boot.seed.restApi.Member.dto;
+package spring.boot.seed.restApi.Member.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class MemberLoginRequestDto {
+public class MemberJoinRequestDto {
 	private String memberName;
 	private String password;
 }

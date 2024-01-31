@@ -1,13 +1,12 @@
 package spring.boot.seed.restApi.Member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import spring.boot.seed.exception.AppException;
 import spring.boot.seed.exception.ErrorCode;
-import spring.boot.seed.restApi.Member.dto.MemberJoinRequestDto;
-import spring.boot.seed.restApi.Member.dto.MemberLoginRequestDto;
+import spring.boot.seed.restApi.Member.dto.request.MemberJoinRequestDto;
+import spring.boot.seed.restApi.Member.dto.request.MemberLoginRequestDto;
 import spring.boot.seed.restApi.Member.model.MemberEntity;
 import spring.boot.seed.restApi.Member.repository.MemberRepository;
 import spring.boot.seed.utils.JwtUtil;

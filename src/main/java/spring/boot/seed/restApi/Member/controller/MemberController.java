@@ -3,8 +3,8 @@ package spring.boot.seed.restApi.Member.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import spring.boot.seed.restApi.Member.dto.MemberJoinRequestDto;
-import spring.boot.seed.restApi.Member.dto.MemberLoginRequestDto;
+import spring.boot.seed.restApi.Member.dto.request.MemberJoinRequestDto;
+import spring.boot.seed.restApi.Member.dto.request.MemberLoginRequestDto;
 import spring.boot.seed.restApi.Member.service.MemberService;
 
 @RestController
