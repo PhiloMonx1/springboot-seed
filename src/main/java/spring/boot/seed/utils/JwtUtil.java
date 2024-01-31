@@ -33,11 +33,13 @@ public class JwtUtil {
 	}
 
 	public static DecodedJWT decodedToken(String token){
-		DecodedJWT jwt = JWT.require(Algorithm.HMAC256(secretKey))
+		if(token.startsWith("Bearer ")){
+			token = token.split(" ")[1];
+		}
+
+		return JWT.require(Algorithm.HMAC256(secretKey))
 				.build()
 				.verify(token);
-
-		return jwt;
 	}
 
 	public static Boolean isExpiredToken(String token) {
