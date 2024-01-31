@@ -41,7 +41,7 @@ public class MemberService {
 				.modifiedAt(member.getModifiedAt())
 				.build();
 
-		String accessToken = JwtUtil.createToken(member.getMemberName());
+		String accessToken = JwtUtil.createAccessToken(member.getMemberName());
 
 		response.setHeader("accessToken", accessToken);
 
@@ -66,7 +66,7 @@ public class MemberService {
 				.modifiedAt(selectedMember.getModifiedAt())
 				.build();
 
-		String accessToken = JwtUtil.createToken(selectedMember.getMemberName());
+		String accessToken = JwtUtil.createAccessToken(selectedMember.getMemberName());
 
 		response.setHeader("accessToken", accessToken);
 
