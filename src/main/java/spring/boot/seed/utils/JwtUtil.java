@@ -2,9 +2,14 @@ package spring.boot.seed.utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import spring.boot.seed.exception.AppException;
+import spring.boot.seed.exception.ErrorCode;
 
 import java.util.Date;
 
@@ -33,16 +38,20 @@ public class JwtUtil {
 	}
 
 	public static DecodedJWT decodedToken(String token){
-		DecodedJWT jwt = JWT.require(Algorithm.HMAC256(secretKey))
-				.build()
-				.verify(token);
-
-		return jwt;
-	}
-
-	public static Boolean isExpiredToken(String token) {
-		DecodedJWT decodedJWT = decodedToken(token);
-		return decodedJWT.getExpiresAt().before(new Date());
+		if(token.startsWith("Bearer ")){
+			token = token.split(" ")[1];
+		}
+		try {
+			return JWT.require(Algorithm.HMAC256(secretKey))
+					.build()
+					.verify(token);
+		}catch (TokenExpiredException e){
+			throw new AppException(ErrorCode.EXPIRED_TOKEN, ErrorCode.EXPIRED_TOKEN.getMessage());
+		}catch (JWTDecodeException e){
+			throw new AppException(ErrorCode.DO_NOT_DECODE_TOKEN, ErrorCode.DO_NOT_DECODE_TOKEN.getMessage());
+		}catch (SignatureVerificationException e){
+			throw new AppException(ErrorCode.WRONG_TYPE_TOKEN, ErrorCode.WRONG_TYPE_TOKEN.getMessage());
+		}
 	}
 
 	public static String getMemberName(String token){
