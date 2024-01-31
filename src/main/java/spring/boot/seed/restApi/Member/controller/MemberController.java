@@ -1,10 +1,12 @@
 package spring.boot.seed.restApi.Member.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import spring.boot.seed.restApi.Member.dto.MemberJoinRequestDto;
-import spring.boot.seed.restApi.Member.dto.MemberLoginRequestDto;
+import spring.boot.seed.restApi.Member.dto.request.MemberJoinRequestDto;
+import spring.boot.seed.restApi.Member.dto.request.MemberLoginRequestDto;
+import spring.boot.seed.restApi.Member.dto.response.MemberTokenResponseDto;
 import spring.boot.seed.restApi.Member.service.MemberService;
 
 @RestController
@@ -15,15 +17,13 @@ public class MemberController {
 	private final MemberService memberService;
 
 	@PostMapping("/join")
-	public ResponseEntity<String> join(@RequestBody MemberJoinRequestDto dto){
-		memberService.join(dto);
-		return ResponseEntity.ok().body("회원가입에 성공했습니다.");
+	public ResponseEntity<MemberTokenResponseDto> join(@RequestBody MemberJoinRequestDto dto, HttpServletResponse response){
+		return ResponseEntity.ok().body(memberService.join(dto, response));
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody MemberLoginRequestDto dto){
-		String token = memberService.login(dto);
-		return ResponseEntity.ok().body(token);
+	public ResponseEntity<MemberTokenResponseDto> login(@RequestBody MemberLoginRequestDto dto,  HttpServletResponse response){
+		return ResponseEntity.ok().body(memberService.login(dto, response));
 	}
 
 	@GetMapping("/hello")
