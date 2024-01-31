@@ -93,4 +93,34 @@ public class MemberService {
 				.refreshToken(refreshToken)
 				.build();
 	}
+
+	public MemberTokenResponseDto reissueToken(String refreshToken, HttpServletResponse response) {
+		Long memberId = JwtUtil.verifyRefreshToken(refreshToken);
+		TokenEntity token = tokenRepository.findById(memberId)
+				.orElseThrow(()-> new AppException(ErrorCode.BLACKLIST_TOKEN, ErrorCode.BLACKLIST_TOKEN.getMessage()));
+		if(!token.getToken().equals(refreshToken)) throw new AppException(ErrorCode.BLACKLIST_TOKEN, ErrorCode.BLACKLIST_TOKEN.getMessage());
+		MemberEntity member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_MEMBER, ErrorCode.NOT_FOUND_MEMBER.getMessage()));
+
+		MemberResponseDto memberResponseDto = MemberResponseDto.builder()
+				.memberId(member.getMemberId())
+				.memberName(member.getMemberName())
+				.createdAt(member.getCreatedAt())
+				.modifiedAt(member.getModifiedAt())
+				.build();
+
+		String accessToken = JwtUtil.createAccessToken(member.getMemberName());
+		if(refreshToken.startsWith("Bearer ")) refreshToken = refreshToken.split(" ")[1];
+
+		response.setHeader("accessToken", accessToken);
+		response.setHeader("refreshToken", refreshToken);
+
+		return MemberTokenResponseDto.builder()
+				.memberInfo(memberResponseDto)
+				.accessToken(accessToken)
+				.refreshToken(refreshToken)
+				.build();
+	}
+
+
 }

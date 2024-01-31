@@ -26,6 +26,11 @@ public class MemberController {
 		return ResponseEntity.ok().body(memberService.login(dto, response));
 	}
 
+	@GetMapping("/reissue")
+	public ResponseEntity<MemberTokenResponseDto> reissueToken(@RequestHeader(name="Authorization") String refreshToken, HttpServletResponse response){
+		return ResponseEntity.ok().body(memberService.reissueToken(refreshToken, response));
+	}
+
 	@GetMapping("/hello")
 	public ResponseEntity<String> login(){
 		return ResponseEntity.ok().body("hello");

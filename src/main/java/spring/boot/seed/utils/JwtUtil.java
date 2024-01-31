@@ -74,6 +74,23 @@ public class JwtUtil {
 		}
 	}
 
+	public static Long verifyRefreshToken(String refreshToken) {
+		if(refreshToken.startsWith("Bearer ")) refreshToken = refreshToken.split(" ")[1];
+
+		try {
+			return JWT.require(Algorithm.HMAC256(refreshKey))
+					.build()
+					.verify(refreshToken).getClaim("memberId").asLong();
+
+		} catch (TokenExpiredException e) {
+			throw new AppException(ErrorCode.EXPIRED_TOKEN, ErrorCode.EXPIRED_TOKEN.getMessage());
+		} catch (JWTDecodeException e) {
+			throw new AppException(ErrorCode.DO_NOT_DECODE_TOKEN, ErrorCode.DO_NOT_DECODE_TOKEN.getMessage());
+		} catch (SignatureVerificationException e) {
+			throw new AppException(ErrorCode.WRONG_TYPE_TOKEN, ErrorCode.WRONG_TYPE_TOKEN.getMessage());
+		}
+	}
+
 	public static String getMemberName(String token){
 		DecodedJWT decodedJWT = decodedToken(token);
 		return decodedJWT.getClaim("memberName").asString();
