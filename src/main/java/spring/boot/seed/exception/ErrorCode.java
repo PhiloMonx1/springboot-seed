@@ -17,9 +17,9 @@ public enum ErrorCode {
 	/**
 	 * 	MemberService 관련 에러코드
 	 */
-	MEMBER_NAME_DUPLICATED(HttpStatus.CONFLICT, ""),
-	MEMBER_NAME_NOT_FOUND(HttpStatus.NOT_FOUND, ""),
-	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, ""),
+	MEMBER_NAME_DUPLICATED(HttpStatus.CONFLICT, "이미 존재하는 memberName 입니다."),
+	MEMBER_NAME_NOT_FOUND(HttpStatus.NOT_FOUND, "찾을 수 없는 memberName 입니다."),
+	INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
 
 	;
 
