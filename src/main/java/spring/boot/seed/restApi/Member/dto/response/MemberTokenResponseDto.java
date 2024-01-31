@@ -10,4 +10,5 @@ import lombok.Getter;
 public class MemberTokenResponseDto {
 	MemberResponseDto memberInfo;
 	String accessToken;
+	String refreshToken;
 }

@@ -11,7 +11,9 @@ import spring.boot.seed.restApi.Member.dto.request.MemberLoginRequestDto;
 import spring.boot.seed.restApi.Member.dto.response.MemberResponseDto;
 import spring.boot.seed.restApi.Member.dto.response.MemberTokenResponseDto;
 import spring.boot.seed.restApi.Member.model.MemberEntity;
+import spring.boot.seed.restApi.Member.model.TokenEntity;
 import spring.boot.seed.restApi.Member.repository.MemberRepository;
+import spring.boot.seed.restApi.Member.repository.TokenRepository;
 import spring.boot.seed.utils.JwtUtil;
 
 @Service
@@ -19,6 +21,7 @@ import spring.boot.seed.utils.JwtUtil;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final TokenRepository tokenRepository;
 	private final BCryptPasswordEncoder encoder;
 
 	public MemberTokenResponseDto join(MemberJoinRequestDto dto, HttpServletResponse response) {
@@ -42,11 +45,19 @@ public class MemberService {
 				.build();
 
 		String accessToken = JwtUtil.createAccessToken(member.getMemberName());
+		String refreshToken = JwtUtil.createRefreshToken(member.getMemberId());
+
+		tokenRepository.save(TokenEntity.builder()
+				.memberId(member.getMemberId())
+				.token(refreshToken)
+				.build());
 
 		response.setHeader("accessToken", accessToken);
+		response.setHeader("refreshToken", refreshToken);
 
 		return MemberTokenResponseDto.builder()
 				.memberInfo(memberResponseDto)
+				.accessToken(accessToken)
 				.accessToken(accessToken)
 				.build();
 	}
@@ -67,12 +78,19 @@ public class MemberService {
 				.build();
 
 		String accessToken = JwtUtil.createAccessToken(selectedMember.getMemberName());
+		String refreshToken = JwtUtil.createRefreshToken(selectedMember.getMemberId());
+		tokenRepository.save(TokenEntity.builder()
+				.memberId(selectedMember.getMemberId())
+				.token(refreshToken)
+				.build());
 
 		response.setHeader("accessToken", accessToken);
+		response.setHeader("refreshToken", refreshToken);
 
 		return MemberTokenResponseDto.builder()
 				.memberInfo(memberResponseDto)
 				.accessToken(accessToken)
+				.refreshToken(refreshToken)
 				.build();
 	}
 }
