@@ -2,22 +2,27 @@ package spring.boot.seed.configuration;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
+import spring.boot.seed.exception.AppException;
 import spring.boot.seed.exception.ErrorCode;
 import spring.boot.seed.utils.JwtUtil;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -44,6 +49,22 @@ public class JwtFilter extends OncePerRequestFilter {
 			request.setAttribute("exception", ErrorCode.EXPIRED_TOKEN.getMessage());
 		}catch (JWTDecodeException e){
 			request.setAttribute("exception", ErrorCode.WRONG_TYPE_TOKEN.getMessage());
+		}catch (AppException e){
+			ErrorCode errorCode = e.getErrorCode();
+			HttpStatus httpStatus = errorCode.getHttpStatus();
+			String message = e.getMessage();
+
+			Map<String, Object> responseBody = new LinkedHashMap<>();
+			responseBody.put("HttpStatusCode", httpStatus.value());
+			responseBody.put("HttpStatusMessage", httpStatus.getReasonPhrase());
+			responseBody.put("ErrorCode", errorCode.name());
+			responseBody.put("errorMessage", message);
+
+			response.setContentType("application/json;charset=UTF-8");
+			response.setStatus(httpStatus.value());
+			response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
+			return;
 		}
+		filterChain.doFilter(request, response);
 	}
 }
