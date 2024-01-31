@@ -45,11 +45,11 @@ public class MemberService {
 				.build();
 
 		String accessToken = JwtUtil.createAccessToken(member.getMemberName());
-		String refreshToken = JwtUtil.createRefreshToken(member.getMemberId());
+		String refreshToken = JwtUtil.createRefreshToken(member.getMemberName() ,member.getMemberId());
 
 		tokenRepository.save(TokenEntity.builder()
 				.memberId(member.getMemberId())
-				.token(refreshToken)
+				.token("Bearer " + refreshToken)
 				.build());
 
 		response.setHeader("accessToken", accessToken);
@@ -78,10 +78,10 @@ public class MemberService {
 				.build();
 
 		String accessToken = JwtUtil.createAccessToken(selectedMember.getMemberName());
-		String refreshToken = JwtUtil.createRefreshToken(selectedMember.getMemberId());
+		String refreshToken = JwtUtil.createRefreshToken(selectedMember.getMemberName() ,selectedMember.getMemberId());
 		tokenRepository.save(TokenEntity.builder()
 				.memberId(selectedMember.getMemberId())
-				.token(refreshToken)
+				.token("Bearer " + refreshToken)
 				.build());
 
 		response.setHeader("accessToken", accessToken);
@@ -95,7 +95,7 @@ public class MemberService {
 	}
 
 	public MemberTokenResponseDto reissueToken(String refreshToken, HttpServletResponse response) {
-		Long memberId = JwtUtil.verifyRefreshToken(refreshToken);
+		Long memberId = JwtUtil.verifyRefreshToken(refreshToken).getClaim("memberId").asLong();
 		TokenEntity token = tokenRepository.findById(memberId)
 				.orElseThrow(()-> new AppException(ErrorCode.BLACKLIST_TOKEN, ErrorCode.BLACKLIST_TOKEN.getMessage()));
 		if(!token.getToken().equals(refreshToken)) throw new AppException(ErrorCode.BLACKLIST_TOKEN, ErrorCode.BLACKLIST_TOKEN.getMessage());

@@ -42,7 +42,7 @@ public class JwtUtil {
 
 	}
 
-	public static String createRefreshToken(Long memberId) {
+	public static String createRefreshToken(String memberName, Long memberId) {
 		String issuer = "JWT";
 		Algorithm hashKey = Algorithm.HMAC256(refreshKey);
 		Date issuedTime = new Date();
@@ -51,6 +51,7 @@ public class JwtUtil {
 
 		return JWT.create()
 				.withIssuer(issuer)
+				.withClaim("memberName", memberName.toLowerCase())
 				.withClaim("memberId", memberId)
 				.withIssuedAt(issuedTime)
 				.withExpiresAt(expirationTime)
@@ -74,13 +75,13 @@ public class JwtUtil {
 		}
 	}
 
-	public static Long verifyRefreshToken(String refreshToken) {
+	public static DecodedJWT verifyRefreshToken(String refreshToken) {
 		if(refreshToken.startsWith("Bearer ")) refreshToken = refreshToken.split(" ")[1];
 
 		try {
 			return JWT.require(Algorithm.HMAC256(refreshKey))
 					.build()
-					.verify(refreshToken).getClaim("memberId").asLong();
+					.verify(refreshToken);
 
 		} catch (TokenExpiredException e) {
 			throw new AppException(ErrorCode.EXPIRED_TOKEN, ErrorCode.EXPIRED_TOKEN.getMessage());
@@ -92,8 +93,13 @@ public class JwtUtil {
 	}
 
 	public static String getMemberName(String token){
-		DecodedJWT decodedJWT = decodedToken(token);
-		return decodedJWT.getClaim("memberName").asString();
+		try {
+			DecodedJWT decodedJWT = decodedToken(token);
+			return decodedJWT.getClaim("memberName").asString();
+		}catch (Exception e){
+			DecodedJWT decodedJWT = verifyRefreshToken(token);
+			return decodedJWT.getClaim("memberName").asString();
+		}
 	}
 
 }
